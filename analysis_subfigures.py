@@ -63,17 +63,18 @@ figure.text(
     fontsize='xx-large',
     horizontalalignment="center",
     fontweight="bold"
-    )
+)
 figure.supxlabel(datetime.datetime.now().strftime('%d/%m/%Y %H:%M'))
 
 subfigures = figure.subfigures(3, 1, hspace=0.1)
 
 # Row 1
-axes0 = subfigures[0].subplots(1, 3, sharey=True)
-# subfigures[0].suptitle('Volume per week', fontsize='x-large')
-#subfigures[0].supxlabel("Week",y=-0.13)
-subfigures[0].supylabel("Volume [lbs]")
-subfigures[0].autofmt_xdate() #automatically makes the x-labels rotate
+subfigure = subfigures[0]
+axes0 = subfigure.subplots(1, 3, sharey=True)
+# subfigure.suptitle('Volume per week', fontsize='x-large')
+# subfigure.supxlabel("Week",y=-0.13)
+subfigure.supylabel("Volume [lbs]")
+subfigure.autofmt_xdate() #automatically makes the x-labels rotate
 categories = ["Back", "Chest", "Shoulders"]
 for i in range(len(categories)):
     ax = axes0[i]
@@ -105,11 +106,12 @@ for i in range(len(categories)):
         )
     ) 
 
+
 # Row 2
-axes1 = subfigures[1].subplots(1, 1, sharey=True)
-# subfigures[1].suptitle('Volume per week', fontsize='x-large')
-subfigures[1].supylabel("Volume [lbs]")
-subfigures[0].autofmt_xdate() #automatically makes the x-labels rotate
+subfigure = subfigures[1]
+axes1 = subfigure.subplots(1, 1, sharey=True)
+subfigure.supylabel("Volume [lbs]")
+subfigure.autofmt_xdate() #automatically makes the x-labels rotate
 
 category = "Legs"
 ax = axes1
