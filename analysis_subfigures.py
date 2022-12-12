@@ -134,6 +134,36 @@ ax.xaxis.set_major_formatter(
     )
 )
 
+
+# Row 3
+subfigure = subfigures[2]
+axes2 = subfigure.subplots(1, 2, sharey=True)
+subfigure.supylabel("Volume [lbs]")
+subfigure.autofmt_xdate() #automatically makes the x-labels rotate
+categories = ["Biceps", "Triceps"]
+for i in range(len(categories)):
+    ax = axes2[i]
+    ax.plot(
+        result[result.Category==categories[i]]["Date"], 
+        result[result.Category==categories[i]]["Volume"],
+        "k-",
+        marker='.'
+    )
+    ax.set(title=categories[i])
+    ax.set(xlabel=None)
+    ax.grid(True)
+    
+    # https://matplotlib.org/stable/gallery/ticks/date_concise_formatter.html
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=1))
+    ax.xaxis.set_major_formatter(
+        ConciseDateFormatter(
+            locator=ax.xaxis.get_major_locator(), 
+            show_offset=False
+        )
+    )
+
+
 # The position of the left edge of the subplots, as a fraction of the figure width.
 # plt.subplots_adjust(left=0.1, right=0.95, top=0.90, bottom=0.0)
 pdf.savefig(figure, bbox_inches="tight", pad_inches=0.4)
