@@ -29,12 +29,14 @@ def get_category_volume_by_period(df, category, period) -> pd.Series:
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#anchored-offsets
     if period == "week":
         rule = 'W-Mon'
+        kind = "timestamp"
     elif period == "month":
         rule = 'M'
+        kind="period"
     
     for group_name, group in df.groupby("Category"):
         if group_name == category:
-            series = group.resample(rule, on='Date', label='right')["Volume"].sum()
+            series = group.resample(rule, on='Date', label='right', kind=kind)["Volume"].sum()
             return series
 
 
@@ -91,27 +93,41 @@ def prepare_shared_y_subfigure(subfigure, ylabel, categories):
     return subfigure, axes
 
 
-def plot_ax(ax, x, y, title):
-    ax.plot(x, y, "k-", marker='.' )
+def plot_ax(ax, x, y, title, kind):
+
     ax.set(title=title)
     ax.set(xlabel=None)
-    ax.grid(True)
-    
-    # https://matplotlib.org/stable/gallery/ticks/date_concise_formatter.html
-    ax.xaxis.set_major_locator(mdates.MonthLocator())
-    ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=1))
-    ax.xaxis.set_major_formatter(
-        ConciseDateFormatter(
-            locator=ax.xaxis.get_major_locator(), 
-            show_offset=False
-        )
-    ) 
 
+    if kind == "line":
+        # https://matplotlib.org/stable/gallery/lines_bars_and_markers/marker_reference.html
+        # https://matplotlib.org/stable/gallery/color/named_colors.html#tableau-palette
+        ax.plot(x, y, linestyle="-", color="tab:blue", marker='.', markeredgecolor='black', markerfacecolor='black')
+        ax.grid(True)
+
+        # https://matplotlib.org/stable/gallery/ticks/date_concise_formatter.html
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=1))
+        ax.xaxis.set_major_formatter(
+            ConciseDateFormatter(
+                locator=ax.xaxis.get_major_locator(), 
+                show_offset=False
+            )
+        )
+
+    elif kind == "bar":
+        ax.bar(x.strftime("%b"), y, edgecolor='tab:blue')
+        ax.grid(True, axis="y", linestyle='--', color='grey', alpha=.25)
+        
+    
 
 def plot_categories(df, axes, categories, period):
     for i, category in enumerate(categories):
         series = get_category_volume_by_period(df, category=category, period=period)
-        plot_ax(axes[i], series.index, series.values, category)
+        if period == "week":
+            kind = "line"
+        elif period == "month":
+            kind = "bar"
+        plot_ax(axes[i], series.index, series.values, title=category, kind=kind)
 
 
 ##############################################################################
