@@ -57,43 +57,6 @@ df["Volume"] = df["Weight (lbs)"] * df["Reps"]
 # Plotting functions
 ##############################################################################
 
-def plot_ax(ax, x, y, title):
-    ax.plot(x, y, "k-", marker='.' )
-    ax.set(title=title)
-    ax.set(xlabel=None)
-    ax.grid(True)
-    
-    # https://matplotlib.org/stable/gallery/ticks/date_concise_formatter.html
-    ax.xaxis.set_major_locator(mdates.MonthLocator())
-    ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=1))
-    ax.xaxis.set_major_formatter(
-        ConciseDateFormatter(
-            locator=ax.xaxis.get_major_locator(), 
-            show_offset=False
-        )
-    ) 
-
-
-def plot_categories(df, axes, categories, period):
-    for i, category in enumerate(categories):
-        series = get_category_volume_by_period(df, category=category, period=period)
-        plot_ax(axes[i], series.index, series.values, category)
-
-
-def prepare_shared_y_subfigure(subfigure, ylabel, categories):
-    columns = len(categories)
-    axes = subfigure.subplots(1, columns, sharey=True)
-    subfigure.supylabel(ylabel)
-    subfigure.autofmt_xdate() # automatically makes the x-labels rotate
-    if not isinstance(axes, Iterable):
-        axes = [axes]
-    return subfigure, axes
-
-
-##############################################################################
-# Prepare page 1
-##############################################################################
-
 def prepare_page(title, rows=3, columns=1):
     # rect: Rectangle in figure coordinates to perform constrained layout in 
     # (left, bottom, width, height), each from 0-1.
@@ -116,6 +79,39 @@ def prepare_page(title, rows=3, columns=1):
     subfigures = figure.subfigures(rows, columns, hspace=0.1)
 
     return figure, subfigures
+
+
+def prepare_shared_y_subfigure(subfigure, ylabel, categories):
+    columns = len(categories)
+    axes = subfigure.subplots(1, columns, sharey=True)
+    subfigure.supylabel(ylabel)
+    subfigure.autofmt_xdate() # automatically makes the x-labels rotate
+    if not isinstance(axes, Iterable):
+        axes = [axes]
+    return subfigure, axes
+
+
+def plot_ax(ax, x, y, title):
+    ax.plot(x, y, "k-", marker='.' )
+    ax.set(title=title)
+    ax.set(xlabel=None)
+    ax.grid(True)
+    
+    # https://matplotlib.org/stable/gallery/ticks/date_concise_formatter.html
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=1))
+    ax.xaxis.set_major_formatter(
+        ConciseDateFormatter(
+            locator=ax.xaxis.get_major_locator(), 
+            show_offset=False
+        )
+    ) 
+
+
+def plot_categories(df, axes, categories, period):
+    for i, category in enumerate(categories):
+        series = get_category_volume_by_period(df, category=category, period=period)
+        plot_ax(axes[i], series.index, series.values, category)
 
 
 ##############################################################################
