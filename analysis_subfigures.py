@@ -24,6 +24,20 @@ pdf = matplotlib.backends.backend_pdf.PdfPages(OUTPUT_FILE)
 # Data processing
 ##############################################################################
 
+def get_exercise_volume_by_period(df, exercise, period) -> pd.Series:
+    if period == "week":
+        rule = 'W-Mon'
+        kind = "timestamp"
+    elif period == "month":
+        rule = 'M'
+        kind="period"
+    
+    for group_name, group in df.groupby("Exercise"):
+        if group_name == exercise:
+            series = group.resample(rule, on='Date', label='left', kind=kind)["Volume"].sum()
+            return series
+    raise Exception("Exercise not found")
+
 def get_category_volume_by_period(df, category, period) -> pd.Series:
     
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
@@ -116,8 +130,18 @@ def plot_ax(ax, x, y, title, kind):
         ax.bar(x.strftime("%b"), y, edgecolor='tab:blue')
         ax.grid(True, axis="y", linestyle='--', color='grey', alpha=.25)
         
-    
 
+def plot_exercises(df, axes, exercises, period):
+    for i, exercise in enumerate(exercises):
+        series = get_exercise_volume_by_period(df, exercise=exercise, period=period)
+        if period == "week":
+            kind = "line"
+        elif period == "month":
+            kind = "bar"
+        else:
+            raise Exception(f"Invalid period '{period}'")
+        plot_ax(axes[i], series.index, series.values, title=exercise, kind=kind)
+        
 def plot_categories(df, axes, categories, period):
     for i, category in enumerate(categories):
         series = get_category_volume_by_period(df, category=category, period=period)
@@ -151,9 +175,9 @@ plot_categories(df, axes, categories, period="week")
 ##############################################################################
 
 subfigure = subfigures[1]
-categories = ["Legs"]
+categories = ["Barbell Squat", "Deadlift"]
 subfigure, axes = prepare_shared_y_subfigure(subfigure, "Volume [lbs]", categories)
-plot_categories(df, axes, categories, period="week")
+plot_exercises(df, axes, categories, period="week")
 
 
 ##############################################################################
@@ -192,9 +216,9 @@ plot_categories(df, axes, categories, period="month")
 
 
 subfigure = subfigures2[1]
-categories = ["Legs"]
+categories = ["Barbell Squat", "Deadlift"]
 subfigure, axes = prepare_shared_y_subfigure(subfigure, "Volume [lbs]", categories)
-plot_categories(df, axes, categories, period="month")
+plot_exercises(df, axes, categories, period="month")
 
 
 subfigure = subfigures2[2]
