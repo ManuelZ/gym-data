@@ -14,10 +14,11 @@ import matplotlib.dates as mdates
 from typing import Iterable
 
 
-pdf = matplotlib.backends.backend_pdf.PdfPages("out_pdf.pdf")
-
+INPUT_FILE = r"C:\Users\Manuel\Desktop\Documentos\1.PROJECTS\Gym data\FitNotes_Export_2022_12_28_14_02_54.csv"
+OUTPUT_FILE = f"training_report_{datetime.datetime.now().strftime('%d_%b_%Y').lower()}.pdf"
 A4_SIZE = (8.27, 11.69)
 
+pdf = matplotlib.backends.backend_pdf.PdfPages(OUTPUT_FILE)
 
 ##############################################################################
 # Data processing
@@ -40,10 +41,7 @@ def get_category_volume_by_period(df, category, period) -> pd.Series:
             return series
 
 
-df = pd.read_csv(
-    r"C:\Users\Manuel\Desktop\Documentos\1.PROJECTS\Gym data\FitNotes_Export_2022_12_11_14_34_57.csv",
-    parse_dates=["Date"]
-)
+df = pd.read_csv(INPUT_FILE, parse_dates=["Date"])
 
 # Remove unused columns
 df = df.drop(["Distance", "Distance Unit", "Time"], axis=1)
