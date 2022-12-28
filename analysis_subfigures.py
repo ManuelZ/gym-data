@@ -149,6 +149,8 @@ def plot_categories(df, axes, categories, period):
             kind = "line"
         elif period == "month":
             kind = "bar"
+        else:
+            raise Exception(f"Invalid period '{period}'")
         plot_ax(axes[i], series.index, series.values, title=category, kind=kind)
 
 
