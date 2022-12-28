@@ -36,7 +36,7 @@ def get_category_volume_by_period(df, category, period) -> pd.Series:
     
     for group_name, group in df.groupby("Category"):
         if group_name == category:
-            series = group.resample(rule, on='Date', label='right', kind=kind)["Volume"].sum()
+            series = group.resample(rule, on='Date', label='left', kind=kind)["Volume"].sum()
             return series
 
 
