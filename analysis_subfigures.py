@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
 from matplotlib.layout_engine import ConstrainedLayoutEngine
 import matplotlib.dates
+from matplotlib.dates import ConciseDateFormatter
 import matplotlib.dates as mdates
 from typing import Iterable
 
@@ -117,8 +118,7 @@ def plot_ax(ax, x, y, title, kind):
         ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=matplotlib.dates.MO))
         ax.xaxis.set_major_formatter(
             ConciseDateFormatter(
-                locator=ax.xaxis.get_major_locator(), 
-                show_offset=False
+                locator=ax.xaxis.get_major_locator(), show_offset=False
             )
         )
 
