@@ -21,34 +21,40 @@ pdf = matplotlib.backends.backend_pdf.PdfPages(OUTPUT_FILE)
 # Data processing
 ##############################################################################
 
+
 def get_exercise_volume_by_period(df, exercise, period) -> pd.Series:
     if period == "week":
-        rule = 'W-Mon'
+        rule = "W-Mon"
         kind = "timestamp"
     elif period == "month":
-        rule = 'M'
-        kind="period"
-    
+        rule = "M"
+        kind = "period"
+
     for group_name, group in df.groupby("Exercise"):
         if group_name == exercise:
-            series = group.resample(rule, on='Date', label='left', kind=kind)["Volume"].sum()
+            series = group.resample(rule, on="Date", label="left", kind=kind)[
+                "Volume"
+            ].sum()
             return series
     raise Exception("Exercise not found")
 
+
 def get_category_volume_by_period(df, category, period) -> pd.Series:
-    
+
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#anchored-offsets
     if period == "week":
-        rule = 'W-Mon'
+        rule = "W-Mon"
         kind = "timestamp"
     elif period == "month":
-        rule = 'M'
-        kind="period"
-    
+        rule = "M"
+        kind = "period"
+
     for group_name, group in df.groupby("Category"):
         if group_name == category:
-            series = group.resample(rule, on='Date', label='left', kind=kind)["Volume"].sum()
+            series = group.resample(rule, on="Date", label="left", kind=kind)[
+                "Volume"
+            ].sum()
             return series
 
 
@@ -58,7 +64,7 @@ df = pd.read_csv(INPUT_FILE, parse_dates=["Date"])
 df = df.drop(["Distance", "Distance Unit", "Time"], axis=1)
 
 # Filter by date
-df = df[(df['Date'] > '2022-09-01')]
+df = df[(df["Date"] > "2022-09-01")]
 
 # Calculate volume
 df["Volume"] = df["Weight (lbs)"] * df["Reps"]
@@ -68,24 +74,26 @@ df["Volume"] = df["Weight (lbs)"] * df["Reps"]
 # Plotting functions
 ##############################################################################
 
+
 def prepare_page(title, rows=3, columns=1):
-    # rect: Rectangle in figure coordinates to perform constrained layout in 
+    # rect: Rectangle in figure coordinates to perform constrained layout in
     # (left, bottom, width, height), each from 0-1.
     # Allows me to have some space between the figure suptitle and the figures
     # Needs to be activated before any axes are added to a figure
     layout_engine = ConstrainedLayoutEngine(rect=(0, 0, 1, 0.95))
     figure = plt.figure(figsize=A4_SIZE, layout=layout_engine)
-    
+
     # Using Text works better than using figure.suptitle
     # figure.suptitle("Gym report1", fontsize='xx-large')
     figure.text(
-        0.5, 0.98,
+        0.5,
+        0.98,
         title,
-        fontsize='xx-large',
+        fontsize="xx-large",
         horizontalalignment="center",
-        fontweight="bold"
+        fontweight="bold",
     )
-    figure.supxlabel(datetime.datetime.now().strftime('%d/%m/%Y %H:%M'))
+    figure.supxlabel(datetime.datetime.now().strftime("%d/%m/%Y %H:%M"))
 
     subfigures = figure.subfigures(rows, columns, hspace=0.1)
 
@@ -96,7 +104,7 @@ def prepare_shared_y_subfigure(subfigure, ylabel, categories):
     columns = len(categories)
     axes = subfigure.subplots(1, columns, sharey=True)
     subfigure.supylabel(ylabel)
-    subfigure.autofmt_xdate() # automatically makes the x-labels rotate
+    subfigure.autofmt_xdate()  # automatically makes the x-labels rotate
     if not isinstance(axes, Iterable):
         axes = [axes]
     return subfigure, axes
@@ -110,7 +118,15 @@ def plot_ax(ax, x, y, title, kind):
     if kind == "line":
         # https://matplotlib.org/stable/gallery/lines_bars_and_markers/marker_reference.html
         # https://matplotlib.org/stable/gallery/color/named_colors.html#tableau-palette
-        ax.plot(x, y, linestyle="-", color="tab:blue", marker='.', markeredgecolor='black', markerfacecolor='black')
+        ax.plot(
+            x,
+            y,
+            linestyle="-",
+            color="tab:blue",
+            marker=".",
+            markeredgecolor="black",
+            markerfacecolor="black",
+        )
         ax.grid(True)
 
         # https://matplotlib.org/stable/gallery/ticks/date_concise_formatter.html
@@ -123,8 +139,8 @@ def plot_ax(ax, x, y, title, kind):
         )
 
     elif kind == "bar":
-        ax.bar(x.strftime("%b"), y, edgecolor='tab:blue')
-        ax.grid(True, axis="y", linestyle='--', color='grey', alpha=.25)
+        ax.bar(x.strftime("%b"), y, edgecolor="tab:blue")
+        ax.grid(True, axis="y", linestyle="--", color="grey", alpha=0.25)
 
 
 def plot_exercises(df, axes, exercises, period):
@@ -217,7 +233,7 @@ categories = ["Biceps", "Triceps"]
 subfigure, axes = prepare_shared_y_subfigure(subfigure, "Volume [lbs]", categories)
 plot_categories(df, axes, categories, period="month")
 
-   
+
 # The position of the left edge of the subplots, as a fraction of the figure width.
 # plt.subplots_adjust(left=0.1, right=0.95, top=0.90, bottom=0.0)
 pdf.savefig(figure2, bbox_inches="tight", pad_inches=0.4)
@@ -281,4 +297,8 @@ for group_name, group in df.groupby("Exercise"):
 
 
 pdf.savefig(figure3, bbox_inches="tight", pad_inches=0.4)
+
+##############################################################################
+# Close
+##############################################################################
 pdf.close()
