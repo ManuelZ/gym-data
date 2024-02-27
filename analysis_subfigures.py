@@ -1,9 +1,7 @@
 # Standard-Library imports
 import datetime
-import sys
 
 # External imports
-import numpy as np
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
