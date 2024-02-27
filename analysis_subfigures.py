@@ -229,5 +229,64 @@ plot_categories(df, axes, categories, period="month")
 # The position of the left edge of the subplots, as a fraction of the figure width.
 # plt.subplots_adjust(left=0.1, right=0.95, top=0.90, bottom=0.0)
 pdf.savefig(figure2, bbox_inches="tight", pad_inches=0.4)
-plt.show()
+##############################################################################
+# Page 3
+##############################################################################
+
+figure3, subfigures3 = prepare_page("Max weight lifted", rows=3, columns=1)
+# The position of the left edge of the subplots, as a fraction of the figure width.
+# plt.subplots_adjust(left=0.1, right=0.95, top=0.90, bottom=0.0)
+
+subfigure = subfigures3[0]
+axes = subfigure.subplots(1, 1, sharey=True)
+subfigure.supylabel("Weight [lbs]")
+subfigure.autofmt_xdate()  # automatically makes the x-labels rotate
+
+ax = axes
+
+ax.set(title="Max weight per core lift")
+ax.set(xlabel=None)
+
+exercises = {
+    "Deadlift": {"color": "tab:orange", "marker": "X", "linestyle": "dotted"},
+    "Barbell Squat": {"color": "tab:blue", "marker": "o", "linestyle": "solid"},
+    "Flat Barbell Bench Press": {
+        "color": "tab:green",
+        "marker": "*",
+        "linestyle": "dashed",
+    },
+    "Overhead Press": {"color": "tab:red", "marker": "s", "linestyle": "dashdot"},
+}
+for group_name, group in df.groupby("Exercise"):
+    if group_name in exercises:
+        rule = "W-Mon"
+        kind = "timestamp"
+        series = group.resample(rule, on="Date", label="left", kind=kind)[
+            "Weight (lbs)"
+        ].max()
+
+        ax.plot(
+            series.index,
+            series.values,
+            linestyle=exercises[group_name]["linestyle"],
+            color=exercises[group_name]["color"],
+            marker=exercises[group_name]["marker"],
+            markeredgecolor="black",
+            markerfacecolor="black",
+            label=group_name,
+        )
+        ax.legend()
+        ax.grid(True)
+
+        # https://matplotlib.org/stable/gallery/ticks/date_concise_formatter.html
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=matplotlib.dates.MO))
+        ax.xaxis.set_major_formatter(
+            ConciseDateFormatter(
+                locator=ax.xaxis.get_major_locator(), show_offset=False
+            )
+        )
+
+
+pdf.savefig(figure3, bbox_inches="tight", pad_inches=0.4)
 pdf.close()
