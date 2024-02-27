@@ -6,4 +6,5 @@ Use Python, Pandas and Matplotlib to generate a PDF training report with graphs 
 - Max weight lifted
 
 Example output:
+
 ![alt text](images/image.png)
