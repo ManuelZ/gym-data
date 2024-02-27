@@ -125,7 +125,7 @@ def plot_ax(ax, x, y, title, kind):
     elif kind == "bar":
         ax.bar(x.strftime("%b"), y, edgecolor='tab:blue')
         ax.grid(True, axis="y", linestyle='--', color='grey', alpha=.25)
-        
+
 
 def plot_exercises(df, axes, exercises, period):
     for i, exercise in enumerate(exercises):
@@ -137,7 +137,8 @@ def plot_exercises(df, axes, exercises, period):
         else:
             raise Exception(f"Invalid period '{period}'")
         plot_ax(axes[i], series.index, series.values, title=exercise, kind=kind)
-        
+
+
 def plot_categories(df, axes, categories, period):
     for i, category in enumerate(categories):
         series = get_category_volume_by_period(df, category=category, period=period)
@@ -191,7 +192,6 @@ plot_categories(df, axes, categories, period="week")
 # The position of the left edge of the subplots, as a fraction of the figure width.
 # plt.subplots_adjust(left=0.1, right=0.95, top=0.90, bottom=0.0)
 pdf.savefig(figure, bbox_inches="tight", pad_inches=0.4)
-plt.show()
 
 
 ##############################################################################
@@ -199,10 +199,6 @@ plt.show()
 ##############################################################################
 
 figure2, subfigures2 = prepare_page("Volume per month - 2022", rows=3, columns=1)
-
-##############################################################################
-# Row 1
-##############################################################################
 
 subfigure = subfigures2[0]
 categories = ["Back", "Chest", "Shoulders"]
